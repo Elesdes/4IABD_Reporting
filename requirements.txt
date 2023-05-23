@@ -1,0 +1,10 @@
+# Web
+streamlit
+
+# Data
+pandas
+numpy
+matplotlib
+plotly
+
+# Others
