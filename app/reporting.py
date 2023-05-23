@@ -4,7 +4,7 @@ from typing import Any, Tuple
 import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
-from df_utils import generate_df_from_metadata
+from .df_utils import generate_df_from_metadata
 from matplotlib.backends.backend_agg import RendererAgg
 
 DATA_TYPE_CATEGORICAL = "CAT"
