@@ -44,7 +44,7 @@ def convert_data(data: pd.Series) -> Tuple[pd.Series, str]:
     int_data = pd.to_numeric(data, errors="coerce", downcast="integer")
 
     str_data = data.astype(str)
-    float_data = pd.to_numeric(str_data.str.replace(",", "."), errors="coerce")
+    float_data = pd.to_numeric(str_data.str.replace(",", "."), errors="coerce") .round(2)
     date_data = pd.to_datetime(str_data, errors="coerce")
 
     if num_unique_values == len(data):
