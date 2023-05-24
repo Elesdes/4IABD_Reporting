@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
-from app.df_utils import generate_df_from_metadata
-from app.reporting import clean_dataset
+from src.df_utils import generate_df_from_metadata
+from src.reporting import clean_dataset
 
 # Set page configuration
 st.set_page_config(page_title="Report Generator", page_icon="chart_with_upwards_trend")
