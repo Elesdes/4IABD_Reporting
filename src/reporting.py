@@ -19,6 +19,20 @@ DISPLAY_VALUES = 5
 MAX_PIE_BINS = 10
 
 
+def try_convert(data: pd.Series) -> Any:
+    """
+    Try to convert a Pandas Series into a list of Int in order to see if it's a real num form.
+    :param data: The input Pandas Series containing data to be converted.
+    :return: A list of Int that is not received or None.
+    """
+    tmp = []
+    for value in data:
+        try:
+            tmp.append(int(value))
+        except:
+            return None
+    return tmp
+
 def convert_data(data: pd.Series) -> Tuple[pd.Series, str]:
     """
     Convert the data in the given Pandas Series and determine its data type.
@@ -38,7 +52,7 @@ def convert_data(data: pd.Series) -> Tuple[pd.Series, str]:
     elif num_unique_values <= MAX_CATEGORICAL_VALUES and not int_data.isna().any():
         data_type = DATA_TYPE_CATEGORICAL
         data = int_data.replace(-1, pd.NaT)
-    elif not float_data.isna().any():
+    elif not float_data.isna().any() or try_convert(data):
         data_type = DATA_TYPE_NUMERICAL
         data = float_data.replace(-1, pd.NaT)
     elif not date_data.isna().any():
