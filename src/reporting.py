@@ -28,6 +28,8 @@ def try_convert(data: pd.Series) -> Any:
     tmp = []
     for value in data:
         try:
+            #TODO Vérifier si les - sont considérés comme des char ou bien des moins. Cela fait bug la cat NUM pour TXT
+            #TODO Si c'est pas une valeur (""), alors ca ne marche pas non plus. Vérifier ce qu'il se passe à ce sujet.
             tmp.append(int(value))
         except:
             return None
@@ -49,6 +51,7 @@ def convert_data(data: pd.Series) -> Tuple[pd.Series, str]:
 
     if num_unique_values == len(data):
         data_type = DATA_TYPE_INDEX
+    #TODO: Changer la max categorical value. Peut être en récupérant la donnée depuis le site?
     elif num_unique_values <= MAX_CATEGORICAL_VALUES and not int_data.isna().any():
         data_type = DATA_TYPE_CATEGORICAL
         data = int_data.replace(-1, pd.NaT)
@@ -57,6 +60,7 @@ def convert_data(data: pd.Series) -> Tuple[pd.Series, str]:
         data = float_data.replace(-1, pd.NaT)
     elif not date_data.isna().any():
         data_type = DATA_TYPE_DATE
+        # TODO: ici, on n'a pas forcément des années. Parfois ca peut être du temps comme XX:XX:XX
         data = date_data.dt.year
     else:
         data_type = DATA_TYPE_TEXT
@@ -77,7 +81,10 @@ def render(dataset: pd.Series, column: str, sparsity: float, data_type: str) -> 
     if data_type == DATA_TYPE_CATEGORICAL or data_type != DATA_TYPE_NUMERICAL:
         right.write(f"Distinct values: {dataset.nunique()}")
     else:
+        #TODO: afficher mais selon certains calculs. Ne pas oublier que l'on ne peut pas le faire tout le temps en fonction du
+        # Skew et Kurtosis
         median, mean = dataset.median(), dataset.mean()
+
         skew, kurtosis = dataset.skew(), dataset.kurtosis()
         right.write(
             f"""Kurtosis: {kurtosis}
@@ -93,6 +100,7 @@ def render(dataset: pd.Series, column: str, sparsity: float, data_type: str) -> 
         p = plt.gcf()
         p.gca().add_artist(plt.Circle((0, 0), 0.3, color="white"))
         left.pyplot(fig)
+    #TODO peut être demander le nombre de catégories que l'on souhaite,
     elif 1000 > histogram.size > 1 and data_type != DATA_TYPE_TEXT:
         left.bar_chart(histogram)
     else:
