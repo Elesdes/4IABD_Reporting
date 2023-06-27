@@ -26,7 +26,6 @@ def try_convert(data: pd.Series) -> Any:
     :return: A list of Int that is not received or None.
     """
     tmp = []
-    print("Erwan was here")
     for value in data:
         try:
             #TODO Vérifier si les - sont considérés comme des char ou bien des moins. Cela fait bug la cat NUM pour TXT
@@ -50,6 +49,7 @@ def convert_data(data: pd.Series) -> Tuple[pd.Series, str]:
     float_data = pd.to_numeric(str_data.str.replace(",", "."), errors="coerce") .round(2)
     date_data = pd.to_datetime(str_data, errors="coerce")
 
+    print("Erwan was here")
     if num_unique_values == len(data):
         data_type = DATA_TYPE_INDEX
     #TODO: Changer la max categorical value. Peut être en récupérant la donnée depuis le site?
