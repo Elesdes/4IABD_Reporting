@@ -127,7 +127,7 @@ def clean_dataset(metadata: Any, file_type: str) -> None:
 
                 return my_format
 
-            labels = 'Avant loi 2015', 'Après loi 2015'
+            labels = 'Nbr arrestation avant loi 2015', 'Nbr arrestation après loi 2015'
 
             fig, ax = plt.subplots()
             sub_data = data.loc[:, ['YEAR']].values
@@ -135,6 +135,7 @@ def clean_dataset(metadata: Any, file_type: str) -> None:
             sizes = [sub_data[sub_data < 2015].count().values[0], sub_data[sub_data > 2014].count().values[0]]
 
             ax.pie(sizes, labels=labels, autopct=autopct_format(sizes))
+            st.divider()
             st.write(f"### {column} [{data_type}] Post traitement")
             left, right = st.columns(2)
             p = plt.gcf()
