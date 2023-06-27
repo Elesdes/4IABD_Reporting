@@ -51,10 +51,6 @@ def convert_data(data: pd.Series) -> Tuple[pd.Series, str]:
     float_data = pd.to_numeric(str_data.str.replace(",", "."), errors="coerce") .round(2)
     date_data = pd.to_datetime(str_data, errors="coerce")
 
-    print("Num:")
-    print(num_unique_values)
-    print(MAX_CATEGORICAL_VALUES)
-    print(data)
     if num_unique_values == len(data):
         data_type = DATA_TYPE_INDEX
     #TODO: Changer la max categorical value. Peut être en récupérant la donnée depuis le site?
