@@ -4,10 +4,11 @@ from src.df_utils import generate_df_from_metadata
 from src.reporting import clean_dataset
 
 # Set page configuration
-st.set_page_config(page_title="Report Generator", page_icon="chart_with_upwards_trend")
+st.set_page_config(page_title="Report Generator", page_icon="📈")
 
 # Add title and description
 st.title("Report Generator")
+st.sidebar.header("Generate Your Report !")
 st.write(
     """
          Input a file, specify its type, and click on the button to generate a report.
@@ -22,9 +23,7 @@ if uploaded_file is not None:
 
     # Select file extension
     left, right = st.columns(2)
-    type_file = left.selectbox(
-        label="Select a file extension", options=["csv"]
-    )
+    type_file = left.selectbox(label="Select a file extension", options=["csv"])
 
     # Generate report button
     if right.button("Generate Report"):
