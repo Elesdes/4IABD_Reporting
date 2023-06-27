@@ -4,8 +4,6 @@ from typing import Any, Tuple
 import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
-
-import streamlit_app
 from .df_utils import generate_df_from_metadata
 from matplotlib.backends.backend_agg import RendererAgg
 
@@ -28,6 +26,7 @@ def try_convert(data: pd.Series) -> Any:
     :return: A list of Int that is not received or None.
     """
     tmp = []
+    print("Erwan was here")
     for value in data:
         try:
             #TODO Vérifier si les - sont considérés comme des char ou bien des moins. Cela fait bug la cat NUM pour TXT
