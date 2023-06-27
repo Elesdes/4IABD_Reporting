@@ -26,6 +26,7 @@ def try_convert(data: pd.Series) -> Any:
     :return: A list of Int that is not received or None.
     """
     tmp = []
+    print("Erwan was here")
     for value in data:
         try:
             #TODO Vérifier si les - sont considérés comme des char ou bien des moins. Cela fait bug la cat NUM pour TXT
