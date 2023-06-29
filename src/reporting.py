@@ -26,7 +26,6 @@ def try_convert(data: pd.Series) -> Any:
     :return: A list of Int that is not received or None.
     """
     tmp = []
-    print("Erwan was here")
     for value in data:
         try:
             tmp.append(int(value))
@@ -118,7 +117,7 @@ def clean_dataset(metadata: Any, file_type: str) -> None:
 
         render(dataset, column, sparsity, data_type)
 
-        if metadata.name == "Marijuana_Arrests.csv":
+        if 1:
             def autopct_format(values):
                 def my_format(pct):
                     total = sum(values)
