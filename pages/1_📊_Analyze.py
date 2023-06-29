@@ -66,5 +66,8 @@ for column in columns:
         p.gca().add_artist(plt.Circle((0, 0), 0.3, color="white"))
         left.pyplot(fig)
         right.write(
-            f"""Médiane pre 2015: {median[0]}\nMédiane post 2015: {median[1]}\nMoyenne pre 2015: {mean[0]}\nMoyenne post 2015: {mean[1]}"""
+            f"""Médiane pre 2015: {median[0]}\n
+            Médiane post 2015: {median[1]}\n
+            Moyenne pre 2015: {mean[0]}\n
+            Moyenne post 2015: {mean[1]}"""
         )
