@@ -45,10 +45,9 @@ for column in columns:
         labels = 'Nbr arrestation avant loi 2015', 'Nbr arrestation après loi 2015'
 
         fig, ax = plt.subplots()
-        print("Dataset:\n", dataset.values)
-        print("Column:\n", column)
-        """
-        sub_data = dataset.loc[:, ['YEAR']].values
+        print("Dataset:\n", type(data))
+
+        sub_data = data.loc[:, ['YEAR']].values
         sub_data = pd.DataFrame(sub_data)
         sizes = [sub_data[sub_data < 2015].count().values[0], sub_data[sub_data > 2014].count().values[0]]
 
@@ -59,4 +58,3 @@ for column in columns:
         p = plt.gcf()
         p.gca().add_artist(plt.Circle((0, 0), 0.3, color="white"))
         left.pyplot(fig)
-        """
