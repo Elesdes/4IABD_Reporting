@@ -62,8 +62,11 @@ if __name__ == '__main__':
     sub_data = pd.DataFrame(sub_data)
     sizes = [sub_data[sub_data < 2015].count().values[0], sub_data[sub_data > 2014].count().values[0]]
     # median, mean = dataset.median(), dataset.mean()
-    median = [sub_data[sub_data < 2015].median().values[0], sub_data[sub_data > 2014].median().values[0]]
-    mean = [sub_data[sub_data < 2015].mean().values[0], sub_data[sub_data > 2014].mean().values[0]]
+    sub_data_groupby = sub_data[0].value_counts()
+    median = [sub_data_groupby[sub_data_groupby.index < 2015].median(), sub_data_groupby[sub_data_groupby.index > 2014].median()]
+    mean = [sub_data_groupby[sub_data_groupby.index < 2015].mean(), sub_data_groupby[sub_data_groupby.index > 2014].mean()]
+    median = ['%.2f' % elem for elem in median]
+    mean = ['%.2f' % elem for elem in mean]
     print(median)
     print(mean)
     ax.pie(sizes, labels=labels, autopct=autopct_format(sizes))

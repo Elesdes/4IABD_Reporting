@@ -50,8 +50,13 @@ for column in columns:
         sub_data = data.loc[:, ['YEAR']].values
         sub_data = pd.DataFrame(sub_data)
         sizes = [sub_data[sub_data < 2015].count().values[0], sub_data[sub_data > 2014].count().values[0]]
-        median = [sub_data[sub_data < 2015].median().values[0], sub_data[sub_data > 2014].median().values[0]]
-        mean = [sub_data[sub_data < 2015].mean().values[0], sub_data[sub_data > 2014].mean().values[0]]
+        sub_data_groupby = sub_data[0].value_counts()
+        median = [sub_data_groupby[sub_data_groupby.index < 2015].median(),
+                  sub_data_groupby[sub_data_groupby.index > 2014].median()]
+        mean = [sub_data_groupby[sub_data_groupby.index < 2015].mean(),
+                sub_data_groupby[sub_data_groupby.index > 2014].mean()]
+        median = ['%.2f' % elem for elem in median]
+        mean = ['%.2f' % elem for elem in mean]
 
         ax.pie(sizes, labels=labels, autopct=autopct_format(sizes))
         st.divider()
@@ -61,5 +66,5 @@ for column in columns:
         p.gca().add_artist(plt.Circle((0, 0), 0.3, color="white"))
         left.pyplot(fig)
         right.write(
-            f"""Median pre 2015: {median[0]}\nMedian post 2015: {median[1]}\nMoyenne pre 2015: {mean[0]}\nMoyenne post 2015: {mean[1]}"""
+            f"""Médiane pre 2015: {median[0]}\nMédiane post 2015: {median[1]}\nMoyenne pre 2015: {mean[0]}\nMoyenne post 2015: {mean[1]}"""
         )
