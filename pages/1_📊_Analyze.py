@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 from src.reporting import convert_data, render
+import matplotlib.pyplot as plt
 
 # Set page configuration
 st.set_page_config(page_title="Marijuana Arrest In Colombia - Analyze", page_icon="chart_with_upwards_trend")
@@ -30,3 +31,28 @@ for column in columns:
     )  # 1 - Size after cleaning / Size before cleaning
 
     render(dataset, column, sparsity, data_type)
+
+
+    def autopct_format(values):
+        def my_format(pct):
+            total = sum(values)
+            val = int(round(pct * total / 100.0))
+            return '{:.1f}%\n({v:d})'.format(pct, v=val)
+
+        return my_format
+
+
+    labels = 'Nbr arrestation avant loi 2015', 'Nbr arrestation après loi 2015'
+
+    fig, ax = plt.subplots()
+    sub_data = dataset.loc[:, ['YEAR']].values
+    sub_data = pd.DataFrame(sub_data)
+    sizes = [sub_data[sub_data < 2015].count().values[0], sub_data[sub_data > 2014].count().values[0]]
+
+    ax.pie(sizes, labels=labels, autopct=autopct_format(sizes))
+    st.divider()
+    st.write(f"### {column} [{data_type}] Post traitement")
+    left, right = st.columns(2)
+    p = plt.gcf()
+    p.gca().add_artist(plt.Circle((0, 0), 0.3, color="white"))
+    left.pyplot(fig)
