@@ -50,6 +50,8 @@ for column in columns:
         sub_data = data.loc[:, ['YEAR']].values
         sub_data = pd.DataFrame(sub_data)
         sizes = [sub_data[sub_data < 2015].count().values[0], sub_data[sub_data > 2014].count().values[0]]
+        median = [sub_data[sub_data < 2015].median().values[0], sub_data[sub_data > 2014].median().values[0]]
+        mean = [sub_data[sub_data < 2015].mean().values[0], sub_data[sub_data > 2014].mean().values[0]]
 
         ax.pie(sizes, labels=labels, autopct=autopct_format(sizes))
         st.divider()
@@ -58,3 +60,9 @@ for column in columns:
         p = plt.gcf()
         p.gca().add_artist(plt.Circle((0, 0), 0.3, color="white"))
         left.pyplot(fig)
+        right.write(
+            f"""Median pre 2015: {median[0]}\n
+                Median post 2015: {median[1]}\n
+                Moyenne pre 2015: {mean[0]}\n
+                Moyenne post 2015: {mean[1]}"""
+        )

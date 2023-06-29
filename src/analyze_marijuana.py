@@ -57,10 +57,15 @@ if __name__ == '__main__':
     labels = 'Avant loi 2015', 'Après loi 2015'
 
     fig, ax = plt.subplots()
+    print("Dataset:\n", type(data))
     sub_data = data.loc[:, ['YEAR']].values
     sub_data = pd.DataFrame(sub_data)
     sizes = [sub_data[sub_data < 2015].count().values[0], sub_data[sub_data > 2014].count().values[0]]
-
+    # median, mean = dataset.median(), dataset.mean()
+    median = [sub_data[sub_data < 2015].median().values[0], sub_data[sub_data > 2014].median().values[0]]
+    mean = [sub_data[sub_data < 2015].mean().values[0], sub_data[sub_data > 2014].mean().values[0]]
+    print(median)
+    print(mean)
     ax.pie(sizes, labels=labels, autopct=autopct_format(sizes))
     plt.show()
     """
