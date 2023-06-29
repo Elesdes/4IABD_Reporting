@@ -118,7 +118,7 @@ def clean_dataset(metadata: Any, file_type: str) -> None:
 
         render(dataset, column, sparsity, data_type)
 
-        if column == "DATETIME":
+        if metadata.name == "Marijuana_Arrests.csv":
             def autopct_format(values):
                 def my_format(pct):
                     total = sum(values)
