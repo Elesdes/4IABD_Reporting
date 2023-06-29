@@ -65,4 +65,4 @@ for column in columns:
         p = plt.gcf()
         p.gca().add_artist(plt.Circle((0, 0), 0.3, color="white"))
         left.pyplot(fig)
-        right.write(f'Médiane pre 2015: {median[0]}\nMoyenne pre 2015: {mean[0]}\nMédiane post 2015: {median[1]}\nMoyenne post 2015: {mean[1]}')
+        right.write(f'Médiane pre 2015: {median[0]}  \nMoyenne pre 2015: {mean[0]}  \nMédiane post 2015: {median[1]}  \nMoyenne post 2015: {mean[1]}')
