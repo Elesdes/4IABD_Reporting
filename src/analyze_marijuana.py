@@ -101,70 +101,36 @@ def convert_data(data: pd.Series) -> Tuple[pd.Series, str]:
 
 
 def render(dataset: pd.Series, column: str, sparsity: float, data_type: str) -> None:
-    if column == "YEAR":
-        def autopct_format(values):
-            def my_format(pct):
-                total = sum(values)
-                val = int(round(pct * total / 100.0))
-                return '{:.1f}%\n({v:d})'.format(pct, v=val)
+    st.divider()
+    st.write(f"### {column} [{data_type}]")
+    left, right = st.columns(2)
 
-            return my_format
+    if sparsity > 0:
+        right.write(f"Sparsity: {100 * sparsity:.2f}%")
+    else:
+        right.write("No missing values")
+    if data_type == DATA_TYPE_CATEGORICAL or data_type != DATA_TYPE_NUMERICAL:
+        right.write(f"Distinct values: {dataset.nunique()}")
+    else:
+        skew, kurtosis = dataset.skew(), dataset.kurtosis()
+        right.write(
+            f"""Kurtosis: {kurtosis}
+                        \nSkew: {skew}"""
+        )
 
-        labels = 'Nbr arrestation avant loi 2015', 'Nbr arrestation après loi 2015'
+    histogram = dataset.value_counts()
 
-        fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(5, 5))
 
-        sub_data = dataset.values
-        sub_data = pd.DataFrame(sub_data)
-        sizes = [sub_data[sub_data < 2015].count().values[0], sub_data[sub_data > 2014].count().values[0]]
-        sub_data_groupby = sub_data[0].value_counts()
-        median = [sub_data_groupby[sub_data_groupby.index < 2015].median(),
-                  sub_data_groupby[sub_data_groupby.index > 2014].median()]
-        mean = [sub_data_groupby[sub_data_groupby.index < 2015].mean(),
-                sub_data_groupby[sub_data_groupby.index > 2014].mean()]
-        median = ['%.2f' % elem for elem in median]
-        mean = ['%.2f' % elem for elem in mean]
-
-        ax.pie(sizes, labels=labels, autopct=autopct_format(sizes))
-        st.divider()
-        st.write(f"### {column} [{data_type}] Post traitement")
-        left, right = st.columns(2)
+    if data_type == DATA_TYPE_CATEGORICAL and histogram.size <= MAX_PIE_BINS:
+        ax.pie(histogram, labels=histogram.index)
         p = plt.gcf()
         p.gca().add_artist(plt.Circle((0, 0), 0.3, color="white"))
         left.pyplot(fig)
-        right.write(
-            f'Médiane pre 2015: {median[0]}  \nMoyenne pre 2015: {mean[0]}  \nMédiane post 2015: {median[1]}  \nMoyenne post 2015: {mean[1]}')
+    elif 1000 > histogram.size > 1 and data_type != DATA_TYPE_TEXT:
+        left.bar_chart(histogram)
     else:
-        st.divider()
-        st.write(f"### {column} [{data_type}]")
-        left, right = st.columns(2)
-
-        if sparsity > 0:
-            right.write(f"Sparsity: {100 * sparsity:.2f}%")
-        else:
-            right.write("No missing values")
-        if data_type == DATA_TYPE_CATEGORICAL or data_type != DATA_TYPE_NUMERICAL:
-            right.write(f"Distinct values: {dataset.nunique()}")
-        else:
-            skew, kurtosis = dataset.skew(), dataset.kurtosis()
-            right.write(
-                f"""Kurtosis: {kurtosis}
-                            \nSkew: {skew}"""
-            )
-
-        histogram = dataset.value_counts()
-
-        fig, ax = plt.subplots(figsize=(5, 5))
-
-        if data_type == DATA_TYPE_CATEGORICAL and histogram.size <= MAX_PIE_BINS:
-            ax.pie(histogram, labels=histogram.index)
-            p = plt.gcf()
-            p.gca().add_artist(plt.Circle((0, 0), 0.3, color="white"))
-            left.pyplot(fig)
-        elif 1000 > histogram.size > 1 and data_type != DATA_TYPE_TEXT:
-            left.bar_chart(histogram)
-        else:
-            left.write("No plot available")
+        left.write("No plot available")
 
 
 def clean_dataset(metadata: Any, file_type: str) -> None:
