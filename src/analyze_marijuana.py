@@ -49,7 +49,7 @@ MAX_PIE_BINS = 10
 def filter_data(data, header):
     for head in header:
         for missing_value in MISSING_VALUES[head]:
-            data[head].replace(missing_value[0], missing_value[1])
+            data[head] = data[head].replace(missing_value[0], missing_value[1])
     return data
 
 
