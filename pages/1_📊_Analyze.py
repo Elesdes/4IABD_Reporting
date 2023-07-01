@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 from src.analyze_marijuana import convert_data, render, filter_data
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Set page configuration
 st.set_page_config(page_title="Marijuana Arrest In Colombia - Analyze", page_icon="chart_with_upwards_trend")
@@ -20,11 +21,27 @@ data = pd.read_csv("data/Marijuana_Arrests.csv")
 columns = data.columns
 data = filter_data(data, columns)
 
-print(data["DEFENDANT_PSA"])
-
 for column in columns:
+    if column in ["OFFENSE_BLOCKX", "ARREST_BLOCKX"]:
+        fig, ax = plt.subplots()
+        data = data.loc[:, ['ARREST_BLOCKX', 'ARREST_BLOCKY']]
+        data = data[data['ARREST_BLOCKX'] < 600000]
+        X = data.values
+        sns.scatterplot(x=X[:, 0], y=X[:, 1])
+        plt.xlabel('ARREST_BLOCKX')
+        plt.ylabel('ARREST_BLOCKY')
+
+        st.divider()
+        st.write(f"### {column} [COORDINATES] Post traitement")
+        left, right = st.columns(2)
+        p = plt.gcf()
+        left.pyplot(fig)
+        right.write(
+            f'Les blocs démontrent des zones géographiques relatives aux services de polices.')
+
+
     if column not in ["CATEGORY", "ADDRESS", "GIS_ID", "CREATOR", "CREATED", "EDITOR", "EDITED", "OBJECTID",
-                      "GLOBALID"]:
+                      "GLOBALID", "OFFENSE_BLOCKX", "OFFENSE_BLOCKY", "ARREST_BLOCKX", "ARREST_BLOCKY"]:
         dataset, data_type = convert_data(
             data[column]
         )  # Convert data to numerical, categorical, text or index
