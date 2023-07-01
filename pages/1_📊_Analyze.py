@@ -22,7 +22,6 @@ data = filter_data(data, columns)
 
 for column in columns:
     if column == "ARREST_BLOCKX":
-        column = column[:-1]
         fig, ax = plt.subplots()
         data = data.loc[:, ['ARREST_BLOCKX', 'ARREST_BLOCKY']]
         data = data[data['ARREST_BLOCKX'] < 600000]
@@ -31,7 +30,7 @@ for column in columns:
         plt.ylabel('ARREST_BLOCKY')
 
         st.divider()
-        st.write(f"### {column} [COORDINATES] Post traitement")
+        st.write(f"### {column[:-1]} [COORDINATES] Post traitement")
         left, right = st.columns(2)
         p = plt.gcf()
         left.pyplot(fig)
