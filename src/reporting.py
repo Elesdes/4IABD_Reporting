@@ -49,12 +49,12 @@ def convert_data(data: pd.Series) -> Tuple[pd.Series, str]:
 
     if num_unique_values == len(data):
         data_type = DATA_TYPE_INDEX
-    elif num_unique_values <= MAX_CATEGORICAL_VALUES and not int_data.isna().any():
+    elif num_unique_values <= MAX_CATEGORICAL_VALUES and not int_data.isna().any() and not str_data.isna().any():
         data_type = DATA_TYPE_CATEGORICAL
-        data = int_data.replace(-1, pd.NaT)
+        # data = int_data.replace(-1, pd.NaT)
     elif not float_data.isna().any() or try_convert(data.dropna()):
         data_type = DATA_TYPE_NUMERICAL
-        data = float_data.replace(-1, pd.NaT)
+        #data = float_data.replace(-1, pd.NaT)
     elif not date_data.isna().any():
         data_type = DATA_TYPE_DATE
         data = date_data.dt.year

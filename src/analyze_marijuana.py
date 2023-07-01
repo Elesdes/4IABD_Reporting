@@ -57,7 +57,6 @@ if __name__ == '__main__':
     labels = 'Avant loi 2015', 'Après loi 2015'
 
     fig, ax = plt.subplots()
-    print("Dataset:\n", type(data))
     sub_data = data.loc[:, ['YEAR']].values
     sub_data = pd.DataFrame(sub_data)
     sizes = [sub_data[sub_data < 2015].count().values[0], sub_data[sub_data > 2014].count().values[0]]
@@ -67,10 +66,20 @@ if __name__ == '__main__':
     mean = [sub_data_groupby[sub_data_groupby.index < 2015].mean(), sub_data_groupby[sub_data_groupby.index > 2014].mean()]
     median = ['%.2f' % elem for elem in median]
     mean = ['%.2f' % elem for elem in mean]
-    print(median)
-    print(mean)
+    #print(median)
+    #print(mean)
     ax.pie(sizes, labels=labels, autopct=autopct_format(sizes))
     plt.show()
+
+    corr_data = data[['YEAR', 'AGE', 'OFFENSE_PSA', 'OFFENSE_BLOCKX', 'OFFENSE_BLOCKY', 'ARREST_BLOCKX', 'ARREST_BLOCKY']].dropna().corr()
+    print(corr_data)
+
+    # plotting correlation heatmap
+    dataplot = sns.heatmap(corr_data, annot=True)
+
+    # displaying heatmap
+    plt.show()
+
     """
     # define dataset
     data = pd.read_csv("../data/Marijuana_Arrests.csv")
