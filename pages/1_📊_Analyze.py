@@ -3,6 +3,16 @@ import streamlit as st
 from src.analyze_marijuana import convert_data, render, filter_data
 import matplotlib.pyplot as plt
 
+
+def autopct_format(values):
+    def my_format(pct):
+        total = sum(values)
+        val = int(round(pct * total / 100.0))
+        return '{:.1f}%\n({v:d})'.format(pct, v=val)
+
+    return my_format
+
+
 # Set page configuration
 st.set_page_config(page_title="Marijuana Arrest In Colombia - Analyze", page_icon="chart_with_upwards_trend")
 
@@ -22,18 +32,8 @@ data = filter_data(data, columns)
 
 for column in columns:
     if column == "YEAR":
-        def autopct_format(values):
-            def my_format(pct):
-                total = sum(values)
-                val = int(round(pct * total / 100.0))
-                return '{:.1f}%\n({v:d})'.format(pct, v=val)
-
-            return my_format
-
         labels = 'Nbr arrestation avant loi 2015', 'Nbr arrestation après loi 2015'
-
         fig, ax = plt.subplots()
-
         sub_data = data.values
         sub_data = pd.DataFrame(sub_data)
         sizes = [sub_data[sub_data < 2015].count().values[0], sub_data[sub_data > 2014].count().values[0]]
@@ -96,7 +96,7 @@ for column in columns:
             f'Pourtant la carte est assez similaire à celle des "OFFENSE_BLOCK."')
 
 
-    if column not in ["CATEGORY", "ADDRESS", "GIS_ID", "CREATOR", "CREATED", "EDITOR", "EDITED", "OBJECTID",
+    if column not in ["YEAR","CATEGORY", "ADDRESS", "GIS_ID", "CREATOR", "CREATED", "EDITOR", "EDITED", "OBJECTID",
                       "GLOBALID", "OFFENSE_BLOCKX", "OFFENSE_BLOCKY", "ARREST_BLOCKX", "ARREST_BLOCKY", "CCN"]:
         dataset, data_type = convert_data(
             data[column]
