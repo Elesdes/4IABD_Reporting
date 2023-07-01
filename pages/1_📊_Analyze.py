@@ -23,6 +23,20 @@ data = filter_data(data, columns)
 for column in columns:
     if column == "ARREST_BLOCKX":
         fig, ax = plt.subplots()
+        data = data.loc[:, ['OFFENSE_BLOCKX', 'OFFENSE_BLOCKY']]
+        X = data.values
+        plt.xlabel('OFFENSE_BLOCKX')
+        plt.ylabel('OFFENSE_BLOCKY')
+        plt.scatter(x=X[:, 0], y=X[:, 1])
+        st.divider()
+        st.write(f"### OFFENSE_BLOCK [COORDINATES] Post traitement")
+        left, right = st.columns(2)
+        p = plt.gcf()
+        left.pyplot(fig)
+        right.write(
+            f'Le bloc démontrant les méfait prouve qu\'il existe des zones récurrentes.  \nLa zone en blanc qui traverse la carte pourrait représenter des montagnes ou bien un fleuve.')
+
+        fig, ax = plt.subplots()
         data = data.loc[:, ['ARREST_BLOCKX', 'ARREST_BLOCKY']]
         X = data.values
         plt.xlabel('ARREST_BLOCKX')
