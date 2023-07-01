@@ -24,7 +24,6 @@ for column in columns:
     if column == "ARREST_BLOCKX":
         fig, ax = plt.subplots()
         data = data.loc[:, ['ARREST_BLOCKX', 'ARREST_BLOCKY']]
-        data = data[data['ARREST_BLOCKX'] < 600000]
         X = data.values
         plt.xlabel('ARREST_BLOCKX')
         plt.ylabel('ARREST_BLOCKY')
@@ -35,7 +34,19 @@ for column in columns:
         p = plt.gcf()
         left.pyplot(fig)
         right.write(
-            f'Les blocs démontrent des zones géographiques relatives aux services de polices.')
+            f'Le bloc au loin démontre qu\'il existe des arrestations en dehors des blocs habituels.')
+
+        fig, ax = plt.subplots()
+        data = data.loc[:, ['ARREST_BLOCKX', 'ARREST_BLOCKY']]
+        data = data[data['ARREST_BLOCKX'] < 600000]
+        X = data.values
+        plt.xlabel('ARREST_BLOCKX')
+        plt.ylabel('ARREST_BLOCKY')
+        plt.scatter(x=X[:, 0], y=X[:, 1])
+        p = plt.gcf()
+        left.pyplot(fig)
+        right.write(
+            f'Pourtant la carte est assez similaire à celle des "OFFENSE_BLOCK."')
 
 
     if column not in ["CATEGORY", "ADDRESS", "GIS_ID", "CREATOR", "CREATED", "EDITOR", "EDITED", "OBJECTID",
