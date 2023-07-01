@@ -8,5 +8,4 @@ matplotlib~=3.7.1
 
 # Others
 
-seaborn~=0.12.2
 scikit-learn~=1.2.2

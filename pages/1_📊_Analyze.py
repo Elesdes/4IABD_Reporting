@@ -2,7 +2,6 @@ import pandas as pd
 import streamlit as st
 from src.analyze_marijuana import convert_data, render, filter_data
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 # Set page configuration
 st.set_page_config(page_title="Marijuana Arrest In Colombia - Analyze", page_icon="chart_with_upwards_trend")
@@ -29,7 +28,7 @@ for column in columns:
         X = data.values
         plt.xlabel('ARREST_BLOCKX')
         plt.ylabel('ARREST_BLOCKY')
-        sns.scatterplot(x=X[:, 0], y=X[:, 1])
+        plt.scatter(x=X[:, 0], y=X[:, 1])
         st.divider()
         st.write(f"### {column[:-1]} [COORDINATES] Post traitement")
         left, right = st.columns(2)
