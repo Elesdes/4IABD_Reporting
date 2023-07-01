@@ -26,7 +26,7 @@ def filter_data(data, header):
     if header in MISSING_VALUES:
         missing_values = MISSING_VALUES[header]
         data = list(filter(lambda x: x.strip() not in missing_values, data))
-    return data
+    return pd.DataFrame(data)
 
 def try_convert(data: pd.Series) -> Any:
     """
