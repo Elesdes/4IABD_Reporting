@@ -12,7 +12,33 @@ DATA_TYPE_TEXT = "TXT"
 DATA_TYPE_NUMERICAL = "NUM"
 DATA_TYPE_INDEX = "INDEX"
 DATA_TYPE_DATE = "DATE"
-MISSING_VALUES = {"DEFENDANT_PSA" : ["0"]}
+MISSING_VALUES = {"TYPE": [''],
+                  "ADULT_JUVENILE": [''],
+                  "YEAR": [''],
+                  "DATETIME": [''],
+                  "CCN": [''],
+                  "AGE": [''],
+                  "OFFENSE_DISTRICT": [''],
+                  "OFFENSE_PSA": [''],
+                  "OFFENSE_BLOCKX": [''],
+                  "OFFENSE_BLOCKY": [''],
+                  "DEFENDANT_PSA": [''],
+                  "DEFENDANT_DISTRICT": [''],
+                  "RACE": [''],
+                  "ETHNICITY": [''],
+                  "SEX": [''],
+                  "CATEGORY": [''],
+                  "DESCRIPTION": [''],
+                  "ADDRESS": [''],
+                  "ARREST_BLOCKX": [''],
+                  "ARREST_BLOCKY": [''],
+                  "GIS_ID": [''],
+                  "CREATOR": [''],
+                  "CREATED": [''],
+                  "EDITOR": [''],
+                  "EDITED": [''],
+                  "OBJECTID": [''],
+                  "GLOBALID": ['']}
 
 MAX_CATEGORICAL_VALUES = 32
 
@@ -28,6 +54,7 @@ def filter_data(data, header):
         data = list(filter(lambda x: x.strip() not in missing_values, data))
     return pd.DataFrame(data)
 
+
 def try_convert(data: pd.Series) -> Any:
     """
     Try to convert a Pandas Series into a list of Int in order to see if it's a real num form.
@@ -42,6 +69,7 @@ def try_convert(data: pd.Series) -> Any:
             return None
     return tmp
 
+
 def convert_data(data: pd.Series) -> Tuple[pd.Series, str]:
     """
     Convert the data in the given Pandas Series and determine its data type.
@@ -51,10 +79,9 @@ def convert_data(data: pd.Series) -> Tuple[pd.Series, str]:
     """
     num_unique_values = data.nunique()
 
-
     int_data = pd.to_numeric(data, errors="coerce", downcast="integer")
     str_data = data.astype(str)
-    float_data = pd.to_numeric(str_data.str.replace(",", "."), errors="coerce") .round(2)
+    float_data = pd.to_numeric(str_data.str.replace(",", "."), errors="coerce").round(2)
     date_data = pd.to_datetime(str_data, errors="coerce")
 
     if num_unique_values == len(data):
@@ -64,7 +91,7 @@ def convert_data(data: pd.Series) -> Tuple[pd.Series, str]:
         # data = int_data.replace(-1, pd.NaT)
     elif not float_data.isna().any() or try_convert(data.dropna()):
         data_type = DATA_TYPE_NUMERICAL
-        #data = float_data.replace(-1, pd.NaT)
+        # data = float_data.replace(-1, pd.NaT)
     elif not date_data.isna().any():
         data_type = DATA_TYPE_DATE
         data = date_data.dt.year
@@ -84,7 +111,6 @@ def render(dataset: pd.Series, column: str, sparsity: float, data_type: str) -> 
                 return '{:.1f}%\n({v:d})'.format(pct, v=val)
 
             return my_format
-
 
         labels = 'Nbr arrestation avant loi 2015', 'Nbr arrestation après loi 2015'
 
@@ -108,7 +134,8 @@ def render(dataset: pd.Series, column: str, sparsity: float, data_type: str) -> 
         p = plt.gcf()
         p.gca().add_artist(plt.Circle((0, 0), 0.3, color="white"))
         left.pyplot(fig)
-        right.write(f'Médiane pre 2015: {median[0]}  \nMoyenne pre 2015: {mean[0]}  \nMédiane post 2015: {median[1]}  \nMoyenne post 2015: {mean[1]}')
+        right.write(
+            f'Médiane pre 2015: {median[0]}  \nMoyenne pre 2015: {mean[0]}  \nMédiane post 2015: {median[1]}  \nMoyenne post 2015: {mean[1]}')
     else:
         st.divider()
         st.write(f"### {column} [{data_type}]")
