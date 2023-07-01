@@ -34,7 +34,8 @@ for column in columns:
     if column == "YEAR":
         labels = 'Nbr arrestation avant loi 2015', 'Nbr arrestation après loi 2015'
         fig, ax = plt.subplots()
-        sub_data = data.values
+        sub_data = data.loc[:, ['YEAR']]
+        sub_data = sub_data.values
         sub_data = pd.DataFrame(sub_data)
         sizes = [sub_data[sub_data < 2015].count().values[0], sub_data[sub_data > 2014].count().values[0]]
         sub_data_groupby = sub_data[0].value_counts()
