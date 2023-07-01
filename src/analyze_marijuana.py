@@ -1,135 +1,153 @@
-import numpy as np
-import pandas as pd
+from math import ceil, sqrt
+from typing import Any, Tuple
+
 import matplotlib.pyplot as plt
-import seaborn as sns
-import warnings
+import pandas as pd
+import streamlit as st
+from .df_utils import generate_df_from_metadata
+from matplotlib.backends.backend_agg import RendererAgg
 
-# k-means clustering
-from numpy import unique
-from numpy import where
-from sklearn.datasets import make_classification
-from sklearn.cluster import KMeans
+DATA_TYPE_CATEGORICAL = "CAT"
+DATA_TYPE_TEXT = "TXT"
+DATA_TYPE_NUMERICAL = "NUM"
+DATA_TYPE_INDEX = "INDEX"
+DATA_TYPE_DATE = "DATE"
 
+MAX_CATEGORICAL_VALUES = 32
 
-warnings.filterwarnings('ignore')
-
-
-def calculate_cost(X, centroids, cluster):
-    sum = 0
-    for i, val in enumerate(X):
-        sum += np.sqrt((centroids[int(cluster[i]), 0] - val[0]) ** 2 + (centroids[int(cluster[i]), 1] - val[1]) ** 2)
-    return sum
+DISPLAY_VALUES = 5
+MAX_PIE_BINS = 10
 
 
-def kmeans(X, k):
-    diff = 1
-    cluster = np.zeros(X.shape[0])
-    centroids = data.sample(n=k).values
-    while diff:
-        # for each observation
-        for i, row in enumerate(X):
-            mn_dist = float('inf')
-            # dist of the point from all centroids
-            for idx, centroid in enumerate(centroids):
-                d = np.sqrt((centroid[0] - row[0]) ** 2 + (centroid[1] - row[1]) ** 2)
-                # store closest centroid
-                if mn_dist > d:
-                    mn_dist = d
-                    cluster[i] = idx
-        new_centroids = pd.DataFrame(X).groupby(by=cluster).mean().values
-        # if centroids are same then leave
-        if np.count_nonzero(centroids - new_centroids) == 0:
-            diff = 0
+def try_convert(data: pd.Series) -> Any:
+    """
+    Try to convert a Pandas Series into a list of Int in order to see if it's a real num form.
+    :param data: The input Pandas Series containing data to be converted.
+    :return: A list of Int that is not received or None.
+    """
+    tmp = []
+    for value in data:
+        try:
+            tmp.append(int(value))
+        except:
+            return None
+    return tmp
+
+def convert_data(data: pd.Series) -> Tuple[pd.Series, str]:
+    """
+    Convert the data in the given Pandas Series and determine its data type.
+
+    :param data: The input Pandas Series containing data to be converted.
+    :return: A tuple containing the converted data as a Pandas Series and the determined data type as a string.
+    """
+    num_unique_values = data.nunique()
+    int_data = pd.to_numeric(data, errors="coerce", downcast="integer")
+
+    str_data = data.astype(str)
+    float_data = pd.to_numeric(str_data.str.replace(",", "."), errors="coerce") .round(2)
+    date_data = pd.to_datetime(str_data, errors="coerce")
+
+    if num_unique_values == len(data):
+        data_type = DATA_TYPE_INDEX
+    elif num_unique_values <= MAX_CATEGORICAL_VALUES and (not int_data.isna().any() or not str_data.isna().any()):
+        data_type = DATA_TYPE_CATEGORICAL
+        # data = int_data.replace(-1, pd.NaT)
+    elif not float_data.isna().any() or try_convert(data.dropna()):
+        data_type = DATA_TYPE_NUMERICAL
+        #data = float_data.replace(-1, pd.NaT)
+    elif not date_data.isna().any():
+        data_type = DATA_TYPE_DATE
+        data = date_data.dt.year
+    else:
+        data_type = DATA_TYPE_TEXT
+        data = data.replace("[!?.]", pd.NaT)
+
+    return data, data_type
+
+
+def render(dataset: pd.Series, column: str, sparsity: float, data_type: str) -> None:
+    if column == "DATETIME":
+        def autopct_format(values):
+            def my_format(pct):
+                total = sum(values)
+                val = int(round(pct * total / 100.0))
+                return '{:.1f}%\n({v:d})'.format(pct, v=val)
+
+            return my_format
+
+
+        labels = 'Nbr arrestation avant loi 2015', 'Nbr arrestation après loi 2015'
+
+        fig, ax = plt.subplots()
+        print("Dataset:\n", type(data))
+
+        sub_data = data.loc[:, ['YEAR']].values
+        sub_data = pd.DataFrame(sub_data)
+        sizes = [sub_data[sub_data < 2015].count().values[0], sub_data[sub_data > 2014].count().values[0]]
+        sub_data_groupby = sub_data[0].value_counts()
+        median = [sub_data_groupby[sub_data_groupby.index < 2015].median(),
+                  sub_data_groupby[sub_data_groupby.index > 2014].median()]
+        mean = [sub_data_groupby[sub_data_groupby.index < 2015].mean(),
+                sub_data_groupby[sub_data_groupby.index > 2014].mean()]
+        median = ['%.2f' % elem for elem in median]
+        mean = ['%.2f' % elem for elem in mean]
+
+        ax.pie(sizes, labels=labels, autopct=autopct_format(sizes))
+        st.divider()
+        st.write(f"### {column} [{data_type}] Post traitement")
+        left, right = st.columns(2)
+        p = plt.gcf()
+        p.gca().add_artist(plt.Circle((0, 0), 0.3, color="white"))
+        left.pyplot(fig)
+        right.write(f'Médiane pre 2015: {median[0]}  \nMoyenne pre 2015: {mean[0]}  \nMédiane post 2015: {median[1]}  \nMoyenne post 2015: {mean[1]}')
+    else:
+        st.divider()
+        st.write(f"### {column} [{data_type}]")
+        left, right = st.columns(2)
+
+        if sparsity > 0:
+            right.write(f"Sparsity: {100 * sparsity:.2f}%")
         else:
-            centroids = new_centroids
-    return centroids, cluster
+            right.write("No missing values")
+        if data_type == DATA_TYPE_CATEGORICAL or data_type != DATA_TYPE_NUMERICAL:
+            right.write(f"Distinct values: {dataset.nunique()}")
+        else:
+            median, mean = dataset.median(), dataset.mean()
 
-def autopct_format(values):
-    def my_format(pct):
-        total = sum(values)
-        val = int(round(pct * total / 100.0))
-        return '{:.1f}%\n({v:d})'.format(pct, v=val)
+            skew, kurtosis = dataset.skew(), dataset.kurtosis()
+            right.write(
+                f"""Kurtosis: {kurtosis}
+                            \nSkew: {skew}"""
+            )
 
-    return my_format
+        histogram = dataset.value_counts()
 
-if __name__ == '__main__':
-    data = pd.read_csv("../data/Marijuana_Arrests.csv")
-    labels = 'Avant loi 2015', 'Après loi 2015'
+        fig, ax = plt.subplots(figsize=(5, 5))
 
-    fig, ax = plt.subplots()
-    sub_data = data.loc[:, ['YEAR']].values
-    sub_data = pd.DataFrame(sub_data)
-    sizes = [sub_data[sub_data < 2015].count().values[0], sub_data[sub_data > 2014].count().values[0]]
-    # median, mean = dataset.median(), dataset.mean()
-    sub_data_groupby = sub_data[0].value_counts()
-    median = [sub_data_groupby[sub_data_groupby.index < 2015].median(), sub_data_groupby[sub_data_groupby.index > 2014].median()]
-    mean = [sub_data_groupby[sub_data_groupby.index < 2015].mean(), sub_data_groupby[sub_data_groupby.index > 2014].mean()]
-    median = ['%.2f' % elem for elem in median]
-    mean = ['%.2f' % elem for elem in mean]
-    #print(median)
-    #print(mean)
-    ax.pie(sizes, labels=labels, autopct=autopct_format(sizes))
-    plt.show()
+        if data_type == DATA_TYPE_CATEGORICAL and histogram.size <= MAX_PIE_BINS:
+            ax.pie(histogram, labels=histogram.index)
+            p = plt.gcf()
+            p.gca().add_artist(plt.Circle((0, 0), 0.3, color="white"))
+            left.pyplot(fig)
+        elif 1000 > histogram.size > 1 and data_type != DATA_TYPE_TEXT:
+            left.bar_chart(histogram)
+        else:
+            left.write("No plot available")
 
-    corr_data = data[['YEAR', 'AGE', 'OFFENSE_PSA', 'OFFENSE_BLOCKX', 'OFFENSE_BLOCKY', 'ARREST_BLOCKX', 'ARREST_BLOCKY']].dropna().corr()
-    print(corr_data)
 
-    # plotting correlation heatmap
-    dataplot = sns.heatmap(corr_data, annot=True)
+def clean_dataset(metadata: Any, file_type: str) -> None:
+    data = generate_df_from_metadata(metadata, file_type)
+    columns = data.columns
 
-    # displaying heatmap
-    plt.show()
+    for column in columns:
+        dataset, data_type = convert_data(
+            data[column]
+        )  # Convert data to numerical, categorical, text or index
 
-    """
-    # define dataset
-    data = pd.read_csv("../data/Marijuana_Arrests.csv")
-    data = data.loc[:, ['YEAR']]
-    X = data.values
-    #X, _ = make_classification(n_samples=1000, n_features=2, n_informative=2, n_redundant=0, n_clusters_per_class=1,
-                               #random_state=4)
-    # define the model
-    model = KMeans(n_clusters=2)
-    # fit the model
-    model.fit(X)
-    # assign a cluster to each example
-    yhat = model.predict(X)
-    # retrieve unique clusters
-    clusters = unique(yhat)
-    # create scatter plot for samples from each cluster
-    for cluster in clusters:
-        # get row indexes for samples with this cluster
-        row_ix = where(yhat == cluster)
-        # create scatter of these samples
-        plt.scatter(x=X[row_ix, 0], y=X[row_ix, 1])
-    # show the plot
-    plt.show()
+        dataset = dataset.dropna()  # Remove NaN values
 
-    data = pd.read_csv("../data/Marijuana_Arrests.csv")
-    data = data.loc[:, ['OFFENSE_BLOCKX', 'OFFENSE_BLOCKY']]
-    X = data.values
-    sns.scatterplot(x=X[:, 0], y=X[:, 1])
-    plt.xlabel('OFFENSE_BLOCKX')
-    plt.ylabel('OFFENSE_BLOCKY')
-    plt.show()
+        sparsity = 1.0 - len(dataset) / float(
+            len(data[column])
+        )  # 1 - Size after cleaning / Size before cleaning
 
-    cost_list = []
-    for k in range(1, 10):
-        centroids, cluster = kmeans(X, k)
-        # WCSS (Within cluster sum of square)
-        cost = calculate_cost(X, centroids, cluster)
-        cost_list.append(cost)
-
-    print(cost_list)
-    sns.lineplot(x=range(1, 10), y=cost_list, marker='o')
-    plt.xlabel('k')
-    plt.ylabel('WCSS')
-    plt.show()
-
-    k = 4
-    centroids, cluster = kmeans(X, k)
-    sns.scatterplot(x=X[:, 0], y=X[:, 1], hue=cluster)
-    sns.scatterplot(x=centroids[:, 0], y=centroids[:, 1], s=100, color='y')
-    plt.xlabel('Income')
-    plt.ylabel('Loan')
-    plt.show()
-    """
+        render(dataset, column, sparsity, data_type)
