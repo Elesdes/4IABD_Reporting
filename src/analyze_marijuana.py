@@ -12,33 +12,33 @@ DATA_TYPE_TEXT = "TXT"
 DATA_TYPE_NUMERICAL = "NUM"
 DATA_TYPE_INDEX = "INDEX"
 DATA_TYPE_DATE = "DATE"
-MISSING_VALUES = {"TYPE": [''],
-                  "ADULT_JUVENILE": [''],
-                  "YEAR": [''],
-                  "DATETIME": [''],
-                  "CCN": [''],
-                  "AGE": [''],
-                  "OFFENSE_DISTRICT": [''],
-                  "OFFENSE_PSA": [''],
-                  "OFFENSE_BLOCKX": [''],
-                  "OFFENSE_BLOCKY": [''],
-                  "DEFENDANT_PSA": [''],
-                  "DEFENDANT_DISTRICT": [''],
-                  "RACE": [''],
-                  "ETHNICITY": [''],
-                  "SEX": [''],
-                  "CATEGORY": [''],
-                  "DESCRIPTION": [''],
-                  "ADDRESS": [''],
-                  "ARREST_BLOCKX": [''],
-                  "ARREST_BLOCKY": [''],
-                  "GIS_ID": [''],
-                  "CREATOR": [''],
-                  "CREATED": [''],
-                  "EDITOR": [''],
-                  "EDITED": [''],
-                  "OBJECTID": [''],
-                  "GLOBALID": ['']}
+MISSING_VALUES = {"TYPE": ['', ''],
+                  "ADULT_JUVENILE": ['', ''],
+                  "YEAR": ['', ''],
+                  "DATETIME": ['', ''],
+                  "CCN": ['', ''],
+                  "AGE": ['', ''],
+                  "OFFENSE_DISTRICT": ['', ''],
+                  "OFFENSE_PSA": ['', ''],
+                  "OFFENSE_BLOCKX": ['', ''],
+                  "OFFENSE_BLOCKY": ['', ''],
+                  "DEFENDANT_PSA": ['Out of State','-1'],
+                  "DEFENDANT_DISTRICT": ['', ''],
+                  "RACE": ['', ''],
+                  "ETHNICITY": ['', ''],
+                  "SEX": ['', ''],
+                  "CATEGORY": ['', ''],
+                  "DESCRIPTION": ['', ''],
+                  "ADDRESS": ['', ''],
+                  "ARREST_BLOCKX": ['', ''],
+                  "ARREST_BLOCKY": ['', ''],
+                  "GIS_ID": ['', ''],
+                  "CREATOR": ['', ''],
+                  "CREATED": ['', ''],
+                  "EDITOR": ['', ''],
+                  "EDITED": ['', ''],
+                  "OBJECTID": ['', ''],
+                  "GLOBALID": ['', '']}
 
 MAX_CATEGORICAL_VALUES = 32
 
@@ -47,12 +47,9 @@ MAX_PIE_BINS = 10
 
 
 def filter_data(data, header):
-    data = list(filter(lambda x: x.strip(), data))
-
-    if header in MISSING_VALUES:
-        missing_values = MISSING_VALUES[header]
-        data = list(filter(lambda x: x.strip() not in missing_values, data))
-    return pd.DataFrame(data)
+    for head in header:
+        data[head].replace(MISSING_VALUES[head][0], MISSING_VALUES[head][1])
+    return data
 
 
 def try_convert(data: pd.Series) -> Any:

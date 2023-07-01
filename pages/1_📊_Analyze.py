@@ -18,9 +18,9 @@ st.write(
 
 data = pd.read_csv("data/Marijuana_Arrests.csv")
 columns = data.columns
+data = filter_data(data, columns)
 
 for column in columns:
-    data[column] = filter_data(data, column)
     dataset, data_type = convert_data(
         data[column]
     )  # Convert data to numerical, categorical, text or index
