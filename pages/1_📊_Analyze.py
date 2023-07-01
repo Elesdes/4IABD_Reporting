@@ -21,7 +21,8 @@ columns = data.columns
 data = filter_data(data, columns)
 
 for column in columns:
-    if column in ["OFFENSE_BLOCKX", "ARREST_BLOCKX"]:
+    if column == "ARREST_BLOCKX":
+        column = column[:-1]
         fig, ax = plt.subplots()
         data = data.loc[:, ['ARREST_BLOCKX', 'ARREST_BLOCKY']]
         data = data[data['ARREST_BLOCKX'] < 600000]
