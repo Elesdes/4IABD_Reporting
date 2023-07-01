@@ -66,7 +66,7 @@ def convert_data(data: pd.Series) -> Tuple[pd.Series, str]:
 
 
 def render(dataset: pd.Series, column: str, sparsity: float, data_type: str) -> None:
-    if column == "DATETIME":
+    if column == "YEAR":
         def autopct_format(values):
             def my_format(pct):
                 total = sum(values)
@@ -80,7 +80,7 @@ def render(dataset: pd.Series, column: str, sparsity: float, data_type: str) -> 
 
         fig, ax = plt.subplots()
 
-        sub_data = dataset.loc[:, ['YEAR']].values
+        sub_data = dataset.values
         sub_data = pd.DataFrame(sub_data)
         sizes = [sub_data[sub_data < 2015].count().values[0], sub_data[sub_data > 2014].count().values[0]]
         sub_data_groupby = sub_data[0].value_counts()
