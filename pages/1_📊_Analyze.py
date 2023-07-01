@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-from src.analyze_marijuana import convert_data, render
+from src.analyze_marijuana import convert_data, render, filter_data
 import matplotlib.pyplot as plt
 
 # Set page configuration
@@ -20,6 +20,7 @@ data = pd.read_csv("data/Marijuana_Arrests.csv")
 columns = data.columns
 
 for column in columns:
+    data = filter_data(data, column)
     dataset, data_type = convert_data(
         data[column]
     )  # Convert data to numerical, categorical, text or index

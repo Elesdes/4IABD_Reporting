@@ -12,12 +12,21 @@ DATA_TYPE_TEXT = "TXT"
 DATA_TYPE_NUMERICAL = "NUM"
 DATA_TYPE_INDEX = "INDEX"
 DATA_TYPE_DATE = "DATE"
+MISSING_VALUES = {"DEFENDANT_PSA" : ["0"]}
 
 MAX_CATEGORICAL_VALUES = 32
 
 DISPLAY_VALUES = 5
 MAX_PIE_BINS = 10
 
+
+def filter_data(data, header):
+    data = list(filter(lambda x: x.strip(), data))
+
+    if header in MISSING_VALUES:
+        missing_values = MISSING_VALUES[header]
+        data = list(filter(lambda x: x.strip() not in missing_values, data))
+    return data
 
 def try_convert(data: pd.Series) -> Any:
     """
@@ -41,8 +50,9 @@ def convert_data(data: pd.Series) -> Tuple[pd.Series, str]:
     :return: A tuple containing the converted data as a Pandas Series and the determined data type as a string.
     """
     num_unique_values = data.nunique()
-    int_data = pd.to_numeric(data, errors="coerce", downcast="integer")
 
+
+    int_data = pd.to_numeric(data, errors="coerce", downcast="integer")
     str_data = data.astype(str)
     float_data = pd.to_numeric(str_data.str.replace(",", "."), errors="coerce") .round(2)
     date_data = pd.to_datetime(str_data, errors="coerce")
