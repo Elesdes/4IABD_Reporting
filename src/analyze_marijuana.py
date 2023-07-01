@@ -172,14 +172,15 @@ def clean_dataset(metadata: Any, file_type: str) -> None:
     columns = data.columns
 
     for column in columns:
-        dataset, data_type = convert_data(
-            data[column]
-        )  # Convert data to numerical, categorical, text or index
+        if column not in ["CATEGORY", "ADDRESS", "GIS_ID", "CREATOR", "CREATED", "EDITOR", "EDITED", "OBJECTID", "GLOBALID"]:
+            dataset, data_type = convert_data(
+                data[column]
+            )  # Convert data to numerical, categorical, text or index
 
-        dataset = dataset.dropna()  # Remove NaN values
+            dataset = dataset.dropna()  # Remove NaN values
 
-        sparsity = 1.0 - len(dataset) / float(
-            len(data[column])
-        )  # 1 - Size after cleaning / Size before cleaning
+            sparsity = 1.0 - len(dataset) / float(
+                len(data[column])
+            )  # 1 - Size after cleaning / Size before cleaning
 
-        render(dataset, column, sparsity, data_type)
+            render(dataset, column, sparsity, data_type)
