@@ -146,8 +146,6 @@ def render(dataset: pd.Series, column: str, sparsity: float, data_type: str) -> 
         if data_type == DATA_TYPE_CATEGORICAL or data_type != DATA_TYPE_NUMERICAL:
             right.write(f"Distinct values: {dataset.nunique()}")
         else:
-            median, mean = dataset.median(), dataset.mean()
-
             skew, kurtosis = dataset.skew(), dataset.kurtosis()
             right.write(
                 f"""Kurtosis: {kurtosis}
