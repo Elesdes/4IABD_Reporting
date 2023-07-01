@@ -23,8 +23,8 @@ data = filter_data(data, columns)
 for column in columns:
     if column == "ARREST_BLOCKX":
         fig, ax = plt.subplots()
-        data = data.loc[:, ['OFFENSE_BLOCKX', 'OFFENSE_BLOCKY']]
-        X = data.values
+        sub_data = data.loc[:, ['OFFENSE_BLOCKX', 'OFFENSE_BLOCKY']]
+        X = sub_data.values
         plt.xlabel('OFFENSE_BLOCKX')
         plt.ylabel('OFFENSE_BLOCKY')
         plt.scatter(x=X[:, 0], y=X[:, 1])
@@ -34,11 +34,11 @@ for column in columns:
         p = plt.gcf()
         left.pyplot(fig)
         right.write(
-            f'Le bloc démontrant les méfait prouve qu\'il existe des zones récurrentes.  \nLa zone en blanc qui traverse la carte pourrait représenter des montagnes ou bien un fleuve.')
+            f'Le bloc démontrant les méfaits prouve qu\'il existe des zones récurrentes.  \nLa zone en blanc qui traverse la carte pourrait représenter des montagnes ou bien un fleuve.')
 
         fig, ax = plt.subplots()
-        data = data.loc[:, ['ARREST_BLOCKX', 'ARREST_BLOCKY']]
-        X = data.values
+        sub_data = data.loc[:, ['ARREST_BLOCKX', 'ARREST_BLOCKY']]
+        X = sub_data.values
         plt.xlabel('ARREST_BLOCKX')
         plt.ylabel('ARREST_BLOCKY')
         plt.scatter(x=X[:, 0], y=X[:, 1])
@@ -51,9 +51,9 @@ for column in columns:
             f'Le bloc au loin démontre qu\'il existe des arrestations en dehors des blocs habituels.')
 
         fig, ax = plt.subplots()
-        data = data.loc[:, ['ARREST_BLOCKX', 'ARREST_BLOCKY']]
-        data = data[data['ARREST_BLOCKX'] < 600000]
-        X = data.values
+        sub_data = data.loc[:, ['ARREST_BLOCKX', 'ARREST_BLOCKY']]
+        sub_data = sub_data[sub_data['ARREST_BLOCKX'] < 600000]
+        X = sub_data.values
         plt.xlabel('ARREST_BLOCKX')
         plt.ylabel('ARREST_BLOCKY')
         plt.scatter(x=X[:, 0], y=X[:, 1])
