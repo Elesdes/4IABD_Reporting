@@ -20,6 +20,8 @@ data = pd.read_csv("data/Marijuana_Arrests.csv")
 columns = data.columns
 data = filter_data(data, columns)
 
+print(data["DEFENDANT_PSA"])
+
 for column in columns:
     dataset, data_type = convert_data(
         data[column]
