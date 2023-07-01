@@ -25,7 +25,6 @@ st.write(
          """
 )
 
-
 data = pd.read_csv("data/Marijuana_Arrests.csv")
 columns = data.columns
 data = filter_data(data, columns)
@@ -55,6 +54,7 @@ for column in columns:
         left.pyplot(fig)
         right.write(
             f'Médiane pre 2015: {median[0]}  \nMoyenne pre 2015: {mean[0]}  \nMédiane post 2015: {median[1]}  \nMoyenne post 2015: {mean[1]}')
+
     if column == "ARREST_BLOCKX":
         fig, ax = plt.subplots()
         sub_data = data.loc[:, ['OFFENSE_BLOCKX', 'OFFENSE_BLOCKY']]
@@ -96,8 +96,7 @@ for column in columns:
         right.write(
             f'Pourtant la carte est assez similaire à celle des "OFFENSE_BLOCK."')
 
-
-    if column not in ["YEAR","CATEGORY", "ADDRESS", "GIS_ID", "CREATOR", "CREATED", "EDITOR", "EDITED", "OBJECTID",
+    if column not in ["YEAR", "CATEGORY", "ADDRESS", "GIS_ID", "CREATOR", "CREATED", "EDITOR", "EDITED", "OBJECTID",
                       "GLOBALID", "OFFENSE_BLOCKX", "OFFENSE_BLOCKY", "ARREST_BLOCKX", "ARREST_BLOCKY", "CCN"]:
         dataset, data_type = convert_data(
             data[column]
