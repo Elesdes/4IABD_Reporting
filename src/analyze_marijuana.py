@@ -12,33 +12,33 @@ DATA_TYPE_TEXT = "TXT"
 DATA_TYPE_NUMERICAL = "NUM"
 DATA_TYPE_INDEX = "INDEX"
 DATA_TYPE_DATE = "DATE"
-MISSING_VALUES = {"TYPE": ['', ''],
-                  "ADULT_JUVENILE": ['', ''],
-                  "YEAR": ['', ''],
-                  "DATETIME": ['', ''],
-                  "CCN": ['', ''],
-                  "AGE": ['', ''],
-                  "OFFENSE_DISTRICT": ['', ''],
-                  "OFFENSE_PSA": ['', ''],
-                  "OFFENSE_BLOCKX": ['', ''],
-                  "OFFENSE_BLOCKY": ['', ''],
-                  "DEFENDANT_PSA": ['Out of State', -1],
-                  "DEFENDANT_DISTRICT": ['', ''],
-                  "RACE": ['', ''],
-                  "ETHNICITY": ['', ''],
-                  "SEX": ['', ''],
-                  "CATEGORY": ['', ''],
-                  "DESCRIPTION": ['', ''],
-                  "ADDRESS": ['', ''],
-                  "ARREST_BLOCKX": ['', ''],
-                  "ARREST_BLOCKY": ['', ''],
-                  "GIS_ID": ['', ''],
-                  "CREATOR": ['', ''],
-                  "CREATED": ['', ''],
-                  "EDITOR": ['', ''],
-                  "EDITED": ['', ''],
-                  "OBJECTID": ['', ''],
-                  "GLOBALID": ['', '']}
+MISSING_VALUES = {"TYPE": [['', '']],
+                  "ADULT_JUVENILE": [['', '']],
+                  "YEAR": [['', '']],
+                  "DATETIME": [['', '']],
+                  "CCN": [['', '']],
+                  "AGE": [['', '']],
+                  "OFFENSE_DISTRICT": [['', '']],
+                  "OFFENSE_PSA": [['', '']],
+                  "OFFENSE_BLOCKX": [['', '']],
+                  "OFFENSE_BLOCKY": [['', '']],
+                  "DEFENDANT_PSA": [['Out of State', -1], ['Unknown', -2]],
+                  "DEFENDANT_DISTRICT": [['', '']],
+                  "RACE": [['', '']],
+                  "ETHNICITY": [['', '']],
+                  "SEX": [['', '']],
+                  "CATEGORY": [['', '']],
+                  "DESCRIPTION": [['', '']],
+                  "ADDRESS": [['', '']],
+                  "ARREST_BLOCKX": [['', '']],
+                  "ARREST_BLOCKY": [['', '']],
+                  "GIS_ID": [['', '']],
+                  "CREATOR": [['', '']],
+                  "CREATED": [['', '']],
+                  "EDITOR": [['', '']],
+                  "EDITED": [['', '']],
+                  "OBJECTID": [['', '']],
+                  "GLOBALID": [['', '']]}
 
 MAX_CATEGORICAL_VALUES = 32
 
@@ -48,7 +48,8 @@ MAX_PIE_BINS = 10
 
 def filter_data(data, header):
     for head in header:
-        data[head].replace(MISSING_VALUES[head][0], MISSING_VALUES[head][1])
+        for missing_value in MISSING_VALUES[head]:
+            data[head].replace(missing_value[0], missing_value[1])
     return data
 
 
