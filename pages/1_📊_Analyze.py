@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+import numpy as np
 from src.analyze_marijuana import convert_data, render, filter_data
 import matplotlib.pyplot as plt
 
@@ -21,7 +22,7 @@ st.title("Marijuana Arrest In Colombia")
 st.sidebar.header("Discover Our Project.")
 st.write(
     """
-         Here is our analyze.
+         Voici notre analyse.
          """
 )
 
@@ -93,11 +94,80 @@ for column in columns:
         plt.scatter(x=X[:, 0], y=X[:, 1])
         p = plt.gcf()
         left.pyplot(fig)
-        right.write(
-            f'Pourtant la carte est assez similaire à celle des "OFFENSE_BLOCK."')
+        right.write(f'Pourtant la carte est assez similaire à celle des "OFFENSE_BLOCK."')
 
-    if column not in ["YEAR", "CATEGORY", "ADDRESS", "GIS_ID", "CREATOR", "CREATED", "EDITOR", "EDITED", "OBJECTID",
-                      "GLOBALID", "OFFENSE_BLOCKX", "OFFENSE_BLOCKY", "ARREST_BLOCKX", "ARREST_BLOCKY", "CCN"]:
+    if column == 'TYPE':
+        fig, ax = plt.subplots()
+        sub_data = data.loc[:, ['TYPE']]
+        sub_data = sub_data.values
+        sub_data = pd.DataFrame(sub_data).replace("Public Consumption","Public consumption").value_counts()
+        sub_data = sub_data.drop(['Cultivation', 'Manufacture'])
+        sub_data = pd.Series(np.append(sub_data.values, 4), index=list(sub_data.index) + [('Other',)])
+        indexes = [x[0].replace("'","") for x in sub_data.index.values]
+        ax.pie(sub_data, labels=indexes, autopct=autopct_format(sub_data))
+        st.divider()
+        st.write(f"### {column} [CAT] Post traitement")
+        left, right = st.columns(2)
+        p = plt.gcf()
+        p.gca().add_artist(plt.Circle((0, 0), 0.3, color="white"))
+        left.pyplot(fig)
+        right.write(f'Les catégories sont démontrées ici.')
+
+    if column == 'SEX':
+        fig, ax = plt.subplots()
+        sub_data = data.loc[:, ['SEX']]
+        sub_data = sub_data.values
+        sub_data = pd.DataFrame(sub_data).value_counts()
+        indexes = [x[0].replace("'","") for x in sub_data.index.values]
+        ax.pie(sub_data, labels=indexes, autopct=autopct_format(sub_data))
+        st.divider()
+        st.write(f"### {column} [CAT] Post traitement")
+        left, right = st.columns(2)
+        p = plt.gcf()
+        p.gca().add_artist(plt.Circle((0, 0), 0.3, color="white"))
+        left.pyplot(fig)
+        right.write(f'Les hommes sont les personnes le plus souvent arrêté.')
+
+    if column == 'RACE':
+        fig, ax = plt.subplots()
+        sub_data = data.loc[:, ['RACE']].dropna()
+        sub_data = sub_data.values
+        sub_data = sub_data.flatten()
+        sub_data = np.char.strip(np.array(sub_data, dtype=np.str_))
+        sub_data = pd.DataFrame(sub_data).value_counts()
+        sub_data = sub_data.drop(['A', 'P'])
+        sub_data = pd.Series(np.append(sub_data.values, 57), index=list(sub_data.index) + [('O',)])
+        indexes = [x[0].strip().replace("'", "") for x in sub_data.index.values]
+        print(indexes)
+        print(sub_data)
+        ax.pie(sub_data, labels=indexes, autopct=autopct_format(sub_data))
+        st.divider()
+        st.write(f"### {column} [CAT] Post traitement")
+        left, right = st.columns(2)
+        p = plt.gcf()
+        p.gca().add_artist(plt.Circle((0, 0), 0.3, color="white"))
+        left.pyplot(fig)
+        right.write(f'B = Black.  \nW = White.  \nU = Unknown.  \nO = Other.')
+
+    if column == 'ETHNICITY':
+        fig, ax = plt.subplots()
+        sub_data = data.loc[:, ['ETHNICITY']].dropna()
+        sub_data = sub_data.values
+        sub_data = sub_data.flatten()
+        sub_data = np.char.strip(np.array(sub_data, dtype=np.str_))
+        sub_data = pd.DataFrame(sub_data).value_counts()
+        indexes = [x[0].strip().replace("'", "") for x in sub_data.index.values]
+        ax.pie(sub_data, labels=indexes, autopct=autopct_format(sub_data))
+        st.divider()
+        st.write(f"### {column} [CAT] Post traitement")
+        left, right = st.columns(2)
+        p = plt.gcf()
+        p.gca().add_artist(plt.Circle((0, 0), 0.3, color="white"))
+        left.pyplot(fig)
+        right.write(f'N = Non-Hispanic.  \nH = Hispanic.  \nU = Unknown.')
+
+    if column not in ["YEAR", "TYPE", "ADULT_JUVENILE", "CATEGORY", "OFFENSE_DISTRICT", "ADDRESS", "GIS_ID", "CREATOR", "DEFENDANT_DISTRICT", "CREATED", "EDITOR", "EDITED", "OBJECTID",
+                      "GLOBALID", "OFFENSE_BLOCKX", "OFFENSE_BLOCKY", "ARREST_BLOCKX", "ARREST_BLOCKY", "CCN", "RACE", "ETHNICITY", "SEX", "DESCRIPTION"]:
         dataset, data_type = convert_data(
             data[column]
         )  # Convert data to numerical, categorical, text or index

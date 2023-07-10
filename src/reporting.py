@@ -19,15 +19,6 @@ DISPLAY_VALUES = 5
 MAX_PIE_BINS = 10
 
 
-def autopct_format(values):
-    def my_format(pct):
-        total = sum(values)
-        val = int(round(pct * total / 100.0))
-        return '{:.1f}%\n({v:d})'.format(pct, v=val)
-
-    return my_format
-
-
 def try_convert(data: pd.Series) -> Any:
     """
     Try to convert a Pandas Series into a list of Int in order to see if it's a real num form.
@@ -99,7 +90,7 @@ def render(dataset: pd.Series, column: str, sparsity: float, data_type: str) -> 
     fig, ax = plt.subplots(figsize=(5, 5))
 
     if data_type == DATA_TYPE_CATEGORICAL and histogram.size <= MAX_PIE_BINS:
-        ax.pie(histogram, labels=histogram.index, autopct=autopct_format(len(dataset)))
+        ax.pie(histogram, labels=histogram.index)
         p = plt.gcf()
         p.gca().add_artist(plt.Circle((0, 0), 0.3, color="white"))
         left.pyplot(fig)
